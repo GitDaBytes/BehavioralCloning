@@ -121,7 +121,7 @@ The final model architecture consisted of a convolution neural network with the 
 22. Fully Connected Layer (10 units) - ELU activation with He Normalization
 23. Fully Connected Layer (1 units) - OUTPUT
 
-Here is a visualization of the architecture (Batch Normalization and Dropout Layers not shown). Note I have taken the visualization of the NVIDIA PilotNet architecture diagram and amended it to show the changed input resolution, cropping layer and its output.
+Here is a visualization of the architecture (Batch Normalization and Dropout Layers not shown). 
 
 ![alt text][image1]
 
