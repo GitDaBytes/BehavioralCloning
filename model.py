@@ -16,14 +16,11 @@ from keras.callbacks import EarlyStopping
 from keras.layers.normalization import BatchNormalization
 
 
-# base folder where training data is located
-base_dir = "./training_data/"
-
-# sub folders to use for training
-tracks_to_process = ["Track1_4", "Track1_5R"]#, "Track2"]
-
 def add_flipped_images(images, measurements):
-    
+    """
+    loops through all images and creates a clone flipped horizontally, with flipped steering images
+    and adds them both to the list
+    """
     for idx in range(len(images)):
         image_flipped = np.fliplr(images[idx])
         measurement_flipped = -measurements[idx]
@@ -31,7 +28,9 @@ def add_flipped_images(images, measurements):
         measurements.append(measurement_flipped)
 
 def Add_Shadow(image):
-    
+    """
+    Adds a shadow to an image at various locations
+    """
     r = randint(1,3)
     
     im_width = image.shape[1]
@@ -74,10 +73,11 @@ def Add_Shadow(image):
     
     return output
 
-def read_lines_from_csv(filename):
+def read_lines_from_csv(csv_filename):
+    """
+    reads in all lines from CSV
+    """
     lines = []
-    
-    csv_filename = base_dir + track_number + '/driving_log.csv'
     
     with open(csv_filename) as csvfile:
         reader = csv.reader(csvfile)
@@ -87,7 +87,9 @@ def read_lines_from_csv(filename):
     return lines
 
 def trim_repeated_lines(lines, max_repeat_count=5):
-    
+    """
+    trims out lines with repeated steering measurements that are repeated x times or more
+    """
     repeated_count = 0
     
     last_measurement = 0.0
@@ -122,7 +124,9 @@ def trim_repeated_lines(lines, max_repeat_count=5):
     return trimmed_lines
 
 def rand_jitter(temp):
-
+    """
+    adds random shift in the y of the image
+    """
     temp = shift(temp, shift=(np.random.randint(-20,20,1), 0, 0))
 
     return temp
@@ -130,8 +134,11 @@ def rand_jitter(temp):
 
 # change brightness of image by random amount
 def Augment_Brightness(image):
+    """
+    randonly changes the global brightness of a given image
+    """
 
-    #image = cv2.imread('test.jpg') #load rgb image
+    # change image to HSV for brightening / darkening
     hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV) #convert it to hsv
 
     h, s, v = cv2.split(hsv)
@@ -144,18 +151,26 @@ def Augment_Brightness(image):
     
     final_hsv = cv2.merge((h, s, v))
 
+    # put back to RGB
     image = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2RGB)
     
     return image
 
-def basic_model(model):
+# CANDIDATE MODELS BELOW
 
+def basic_model(model):
+    """
+    builds simple flat model
+    """
+    
     model.add(Flatten())
     
     return model
 
 def LeNet_model(model):
-    
+    """
+    simple LeNet model
+    """
     my_init = TruncatedNormal(mean = 0, stddev = 1e-01)
     
     #kernel_initializer='truncated_normal', bias_initializer='zeros'
@@ -180,7 +195,9 @@ def LeNet_model(model):
 # https://arxiv.org/pdf/1704.07911.pdf
 
 def NVIDIA_PilotNet_model(model):
-    
+    """
+    NVIDIA PilotNet model with added dropout, batch norms, and ELU activations / He Normalizations
+    """
     dropout_cnn = .2
     dropout = .5
     
@@ -218,9 +235,16 @@ def NVIDIA_PilotNet_model(model):
     return model
 
 
-def main(argv):
+def main():
     # load the images for processing
 
+    print("LOADING IMAGES...")
+
+    # base folder where training data is located
+    base_dir = "./training_data/"
+
+    # sub folders to use for training
+    tracks_to_process = ["Track1_4", "Track1_5R"]#, "Track2"]
 
     images = []
     measurements = []
@@ -307,7 +331,7 @@ def main(argv):
     print(X_train.shape)
 
 
-    print("IMAGES ARE LOADED... STARTING TRAINING...)
+    print("IMAGES ARE LOADED... STARTING TRAINING...")
 
     # Training parameters
     batch_size = 256
@@ -357,11 +381,9 @@ def main(argv):
     else:
         model.fit(X_train, y_train, validation_split=0.2, shuffle=True, batch_size=batch_size, epochs=epochs)
 
-    model.save('model.h5') # save the model out
+    model.save('model2.h5') # save the model out
 
     print("Training complete!")
 
-    
-
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
