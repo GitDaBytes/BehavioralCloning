@@ -75,6 +75,8 @@ Training data was chosen to keep the vehicle driving on the road. The primary go
 
 For details about how I created the training data, see the next section. 
 
+It should be noted, that by default the simulator wanted keyboard input to steer the car. This was a problem as a keyboard only allows you to turn the wheel or not (there is no find grain way to control steering with a keyboard). So, I purchased a Logitech F310 game controller and used that to control the car. This provided me the ability to keep the car more centered in the track as well as turn the car in a more controlled manner. On corners, I needed to record a picture and steering angle that match accurately. This could only be done with an analogue controller. With a keyboard you can only turn corners by rapidly presing and releasing a key to wobble your way around the turn. This results in some corner images recorded with full steering lock, and some with zero steering angle. This is very bad and will not teach your model to drive.
+
 ###Model Architecture and Training Strategy
 
 ####1. Solution Design Approach
@@ -93,7 +95,7 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 ####2. Final Model Architecture
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes:
+The final model architecture consisted of a convolution neural network with the following layers and layer sizes:
 
 1. Input of 320x160 image in YUV format
 2. 2D Cropping Layer removing 60 pixels from the top and 20 from the bottom (to remove unneeded image of dash and scenery)
@@ -140,10 +142,11 @@ To augment the data set, I also flipped images and angles thinking that this wou
 ![alt text][image6]
 ![alt text][image7]
 
-Etc ....
+After the collection process, I had 4,857 number of data points. I then preprocessed this data by following all steps below in this order:
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
+* iterating through each of these images and loading the corresponding images for the left and right camera in the car. For the left images, I took the steering angle reading from the center channel and added 0.2 to it, for the right camera images, I subtracted 0.2 from it. I now have three times as much data (4857 x 3 = 14,571).
+* I iterate through all images and randomly apply none, one or more of: fake shadows, random jitter in the y axis, and change the global image brightness to the images.
+* Finally to compensate for all the left turns in the track, I flip every image and invert its steerin angle giving a total of 14,571 x 2 = 29,142 images for training.
 
 I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
