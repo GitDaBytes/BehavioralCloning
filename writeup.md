@@ -10,7 +10,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./images/pilotnet.png "Model Visualization"
+[image1]: ./images/PilotNet.png "Model Visualization"
 [image2]: ./images/center_example.jpg "Center Road"
 [image3]: ./images/correct1.jpg "Recovery Image"
 [image4]: ./images/correct2.jpg "Recovery Image"
